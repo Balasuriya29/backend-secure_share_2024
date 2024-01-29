@@ -4,6 +4,7 @@
   "description": "A Secure Way to Share Files",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -14,9 +15,15 @@
   "author": "Balasuriya Arun Karthick",
   "license": "ISC",
   "dependencies": {
-    "config": "^3.3.9",
+    "body-parser": "^1.20.2",
+    "config": "^3.3.10",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "crypto-js": "^4.2.0",
+    "dotenv": "^16.4.1",
     "express": "^4.18.2",
-    "helmet": "^7.1.0"
+    "helmet": "^7.1.0",
+    "mongoose": "^8.1.1",
+    "nodemon": "^3.0.2"
   }
 }
