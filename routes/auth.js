@@ -25,7 +25,8 @@ authRouter.get("/callback", async (req,res)=>{
             const addUserResult = await addUser(userDetails);
             console.log(addUserResult.message);
         }
-        res.cookie('token',generateAccessToken(userDetails));
+        res.cookie('token',generateAccessToken(userDetails),{
+        });
         res.redirect(`${process.env.FRONTEND_URL}`);
         return;
     }
@@ -39,7 +40,12 @@ authRouter.post("/verifyToken",async (req,res)=>{
     if(!req.cookies.token){
         return res.json(({success:false,message:"Unauthorized access. Token required"}));
     }
-    verifyAccessToken(req.cookies.token);
+    try{
+        jwt.verify(req.cookies.token,process.env.JWT_SECRET_KEY);
+    }
+    catch(e){
+        res.status(400).json({success:false,message:"Unauthorized access"});
+    }
 })
 
 export default authRouter;

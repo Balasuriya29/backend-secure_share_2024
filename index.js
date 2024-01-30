@@ -2,18 +2,24 @@ import express from "express";
 import authRouter from "./routes/auth.js";
 import dotenv from "dotenv";
 import cors from 'cors';
-import FileRouter from "./routes/file.js";
 import server from "./utils/InitializeServer.js";
+import cookieParser from "cookie-parser";
 import { connectToMongoDB } from "./utils.js";
 
 const app = express();
 
+const corsOptions = {
+  origin: 'http://localhost:5173',
+  credentials:true,
+};
+
+
+app.use(cors(corsOptions));
+
+
 app.use(express.json());
-app.use(cors(
-  {
-    origin: 'http://localhost:5173',
-  }
-));
+app.use(cookieParser());
+
 
 const port = 3000;
 
