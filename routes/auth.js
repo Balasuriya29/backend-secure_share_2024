@@ -2,7 +2,7 @@ import axios from "axios";
 import express from "express";
 import QueryString from "qs";
 import jwt from "jsonwebtoken";
-import { addUser, checkUserAlreadyExists, generateAccessToken, verifyAccessToken } from "../utils.js";
+import { addUser, checkUserAlreadyExists, generateAccessToken } from "../utils.js";
 const authRouter = express();
 
 
