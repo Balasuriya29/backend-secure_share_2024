@@ -42,6 +42,7 @@ authRouter.post("/verifyToken",async (req,res)=>{
     }
     try{
         jwt.verify(req.cookies.token,process.env.JWT_SECRET_KEY);
+        res.status(200).json({success:true,message:"Verification success"});
     }
     catch(e){
         res.status(400).json({success:false,message:"Unauthorized access"});
