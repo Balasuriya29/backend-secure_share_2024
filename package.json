@@ -4,6 +4,7 @@
   "description": "A Secure Way to Share Files",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -11,12 +12,23 @@
     "share",
     "encryption"
   ],
+  "type": "module",
   "author": "Balasuriya Arun Karthick",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.6.5",
     "config": "^3.3.9",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "helmet": "^7.1.0"
+    "google-auth-library": "^9.4.1",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.0.3",
+    "nodemon": "^3.0.2",
+    "qs": "^6.11.2",
+    "socket.io": "^4.7.3"
   }
 }
