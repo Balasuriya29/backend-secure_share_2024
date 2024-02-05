@@ -13,7 +13,7 @@ router.get("/:userId", async (req, res) => {
       userId: req.params.userId,
     });
 
-    res.send(200).send({
+    res.status(200).send({
       message: "sucess",
       data: files,
     });
