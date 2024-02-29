@@ -25,6 +25,7 @@ authRouter.get("/callback", async (req,res)=>{
             const addUserResult = await addUser(userDetails);
             console.log(addUserResult.message);
         }
+        res.cookie('userdata',JSON.stringify(userDetails));
         res.cookie('token',generateAccessToken(userDetails),{
         });
         res.redirect(`${process.env.FRONTEND_URL}`);
