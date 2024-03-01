@@ -1,4 +1,6 @@
 import express from "express";
+import { validateFileId } from "../utils/FileHelper.js";
+import { getFileLinkSchema } from "../utils/ValidationSchemas.js";
 const fileRouter = express();
 
 fileRouter.get('/sse/:fileId', (req, res) => {
@@ -35,7 +37,34 @@ fileRouter.get('/sse/:fileId', (req, res) => {
 
 fileRouter.get("/:fileId",(req,res)=>{
     console.log(req.app.server);
-})
+});
+
+fileRouter.post("/getShareLink", (req,res) => {
+
+    const {fileId} = req.body;
+
+    if(fileId && !validateFileId(fileId)){
+        res.status(404).json({success:false,message:"File not found"});
+        return;
+    }
+
+    // Get the file sharing attributes from body
+
+    // const {error,value,warning} = getFileLinkSchema.validate(req.body);
+    // if(error){
+    //     res.send(error.details);
+    //     return;
+    // }
+    // res.send(value);
+
+    // Hash the attributes 
+
+    
+    
+    // Generate the link and send
+
+
+});
 
 
 export default fileRouter;
