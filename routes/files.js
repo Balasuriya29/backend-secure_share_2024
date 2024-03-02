@@ -1,6 +1,4 @@
 import { Router } from "express";
-import mongoose from "mongoose";
-import crypto from "crypto";
 const router = Router();
 
 import { chunk, chunkSchema } from "../models/chunkModel";

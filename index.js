@@ -2,7 +2,6 @@
 import express, { json } from "express";
 import cors from "cors";
 import { raw } from "body-parser";
-import mongoose from "mongoose";
 import dotenv from "dotenv";
 
 // Imports
