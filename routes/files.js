@@ -1,10 +1,10 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const crypto = require("crypto");
-const router = express.Router();
+import { Router } from "express";
+import mongoose from "mongoose";
+import crypto from "crypto";
+const router = Router();
 
-const { chunk, chunkSchema } = require("../models/chunkModel");
-const { file, fileSchema } = require("../models/fileModel");
+import { chunk, chunkSchema } from "../models/chunkModel";
+import { file, fileSchema } from "../models/fileModel";
 
 // GET FILES API
 router.get("/:userId", async (req, res) => {
@@ -137,4 +137,4 @@ router.post("/file/upload", async (req, res) => {
     });
 });
 
-module.exports = router;
+export default router;

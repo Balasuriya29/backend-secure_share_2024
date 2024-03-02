@@ -12,6 +12,7 @@
     "share",
     "encryption"
   ],
+  "type": "module",
   "author": "Balasuriya Arun Karthick",
   "license": "ISC",
   "dependencies": {

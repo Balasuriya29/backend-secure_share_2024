@@ -1,23 +1,24 @@
 //Required Packages
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
+import express, { json } from "express";
+import cors from "cors";
+import { raw } from "body-parser";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
 
 // Imports
-const connection = require("./connection");
-const files = require("./routes/files");
+import { connectDB } from "./connection";
+import files from "./routes/files";
 
 const app = express();
 const port = 3000;
-require("dotenv").config();
+dotenv.config();
 
 //Connection to MongoDB
-connection.connectDB();
+connectDB();
 
 app.use(cors());
-app.use(bodyParser.raw({ type: "application/octet-stream", limit: "100mb" }));
-app.use(express.json());
+app.use(raw({ type: "application/octet-stream", limit: "100mb" }));
+app.use(json());
 
 app.use("/api/files", files);
 

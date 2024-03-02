@@ -1,14 +1,16 @@
 //Required Packages
-const mongoose = require("mongoose");
+import { Schema, model } from "mongoose";
 
 //Schema Section
-const chunkSchema = new mongoose.Schema({
+const chunkSchema = new Schema({
   fileId: String,
   data: Buffer,
 });
 
 //Model Section
-const chunk = mongoose.model("newChunk", chunkSchema, "chunks");
+const chunk = model("newChunk", chunkSchema, "chunks");
 
-module.exports.chunk = chunk;
-module.exports.chunkSchema = chunkSchema;
+const _chunk = chunk;
+export { _chunk as chunk };
+const _chunkSchema = chunkSchema;
+export { _chunkSchema as chunkSchema };

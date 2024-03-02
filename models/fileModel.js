@@ -1,8 +1,8 @@
 //Required Packages
-const mongoose = require("mongoose");
+import { Schema, model } from "mongoose";
 
 //Schema Section
-const fileSchema = new mongoose.Schema({
+const fileSchema = new Schema({
   fileId: String,
   name: String,
   size: String,
@@ -14,7 +14,9 @@ const fileSchema = new mongoose.Schema({
 });
 
 //Model Section
-const file = mongoose.model("newFile", fileSchema, "files");
+const file = model("newFile", fileSchema, "files");
 
-module.exports.file = file;
-module.exports.fileSchema = fileSchema;
+const _file = file;
+export { _file as file };
+const _fileSchema = fileSchema;
+export { _fileSchema as fileSchema };
