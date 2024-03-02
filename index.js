@@ -1,12 +1,12 @@
 //Required Packages
 import express, { json } from "express";
 import cors from "cors";
-import { raw } from "body-parser";
+import bodyParser from "body-parser";
 import dotenv from "dotenv";
 
 // Imports
-import { connectDB } from "./connection";
-import files from "./routes/files";
+import { connectDB } from "./connection.js";
+import files from "./routes/files.js";
 
 const app = express();
 const port = 3000;
@@ -16,7 +16,7 @@ dotenv.config();
 connectDB();
 
 app.use(cors());
-app.use(raw({ type: "application/octet-stream", limit: "100mb" }));
+app.use(bodyParser.raw({ type: "application/octet-stream", limit: "100mb" }));
 app.use(json());
 
 app.use("/api/files", files);

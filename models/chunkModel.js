@@ -11,6 +11,5 @@ const chunkSchema = new Schema({
 const chunk = model("newChunk", chunkSchema, "chunks");
 
 const _chunk = chunk;
-export { _chunk as chunk };
 const _chunkSchema = chunkSchema;
-export { _chunkSchema as chunkSchema };
+export { _chunkSchema as chunkSchema, _chunk as chunk };

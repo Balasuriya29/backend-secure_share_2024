@@ -1,8 +1,8 @@
 import { Router } from "express";
 const router = Router();
 
-import { chunk, chunkSchema } from "../models/chunkModel";
-import { file, fileSchema } from "../models/fileModel";
+import { chunk, chunkSchema } from "../models/chunkModel.js";
+import { file, fileSchema } from "../models/fileModel.js";
 
 // GET FILES API
 router.get("/:userId", async (req, res) => {
