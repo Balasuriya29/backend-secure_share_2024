@@ -10,6 +10,7 @@ import {Server} from "socket.io";
 import { log } from "console";
 import TimeExpirationHandler from "./handlers/TimeExpirationHandler.js";
 import LocationHandler from "./handlers/LocationHandler.js";
+import { getSharedFile, isShareTypeContainsTime } from "./utils/FileHelper.js";
 
 const app = express();
 
@@ -55,13 +56,28 @@ const io = new Server(server,{
 io.on("connection", (socket) => {
   console.log("New client connected");
   console.log("Socket connection id : ",socket.id);
-  socket.on("getFile",(data)=>{
-    const fileId = data["fileId"];
-    if(!fileId){
-      socket.emit('error',{message:"fileId required"});
+  socket.on("getFile",async (data)=>{
+    const shareId = data["shareId"];
+    if(!shareId){
+      socket.emit('error',{message:"shareId required"});
+      socket.disconnect();
       return;
     }
-    TimeExpirationHandler(fileId,socket);
+
+    // Fetching shareTypes of file
+    const sharedFileResult = await getSharedFile(shareId);
+    if(!sharedFileResult.success){
+      socket.emit('error',{message:"file not found"});
+      socket.disconnect();
+    }
+
+    const sharedFile = sharedFileResult.data;
+
+    if(isShareTypeContainsTime(sharedFile["shareTypes"])){
+      console.log('---Share type is time-----');
+      TimeExpirationHandler(sharedFile,socket);
+    }
+
     // LocationHandler(data,socket)
   })
 });

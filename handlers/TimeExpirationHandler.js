@@ -1,15 +1,20 @@
 import returnTimeExpirationResponse from "../utils/returnTimeExpirationResponse.js";
 
-const TimeExpirationHandler = (fileId,socket) => {
-    //Need to fetch the expiration time of the file from DB
-    const fileExpirationTime = new Date(Date.now() + ( 10 * 1000));
+const TimeExpirationHandler = (sharedFile,socket) => {
+
+    const fileExpirationTime = Number.parseInt(sharedFile["shareAttributes"]["time"]["expiration"]);
+
     const expirationIntervalId = setInterval(()=>{
-        if(Date.now() <= fileExpirationTime){
+        const currentTime = new Date().getTime();
+        console.log('-----File expiration time-------',fileExpirationTime);
+        console.log('-----currentTime-----',currentTime);
+        if(currentTime <= fileExpirationTime){
             console.log("----------User can access the file--------");
-            returnTimeExpirationResponse(true,socket,fileId);
+            returnTimeExpirationResponse(true,socket);
         }
         else{
-            returnTimeExpirationResponse(false,socket,fileId);
+            console.log('----File share expired------');
+            returnTimeExpirationResponse(false,socket);
             clearInterval(expirationIntervalId);
         }
     },1000);

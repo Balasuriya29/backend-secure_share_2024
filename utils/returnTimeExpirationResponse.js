@@ -1,8 +1,8 @@
-export default function (fileAccess,socket,fileId) {
+export default function (fileAccess,socket) {
     if(fileAccess){
-        socket.emit('fileStatus',{fileId:fileId,staus:"Open",showFile:true});
+        socket.emit('fileStatus',{staus:"Open",showFile:true});
     }
     else{
-        socket.emit('fileStatus',{fileId:fileId,staus:"Closed",showFile:false});
+        socket.emit('fileStatus',{staus:"Closed",showFile:false});
     }
 }
