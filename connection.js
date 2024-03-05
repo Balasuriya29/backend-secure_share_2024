@@ -1,13 +1,13 @@
 //Required Package
 import mongoose from "mongoose";
-import { get } from "config";
+import config from "config";
 
 const DB_NAME = "SecureShare";
 
 //Starting Connection
 function connectDB() {
   mongoose
-    .connect(getConnectionString(get("DBUserName"), get("DBPassword")))
+    .connect(getConnectionString(config.get("DBUserName"), config.get("DBPassword")))
     .then((result) => console.log(`Connected to MongoDB:${DB_NAME}`))
     .catch((err) => console.error(`Could not connect to MongoDB: ${err}`));
 }
