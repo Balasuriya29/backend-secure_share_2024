@@ -3,7 +3,6 @@ import express, { json } from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
-import cors from 'cors';
 import cookieParser from "cookie-parser";
 import { connectToMongoDB } from "./utils.js";
 import fileRouter from "./routes/file.js";
@@ -13,7 +12,6 @@ import { log } from "console";
 import TimeExpirationHandler from "./handlers/TimeExpirationHandler.js";
 import LocationHandler from "./handlers/LocationHandler.js";
 import { getSharedFile, isShareTypeContainsTime } from "./utils/FileHelper.js";
-import cookieParser from "cookie-parser";
 
 
 // Imports
