@@ -1,10 +1,8 @@
 import { Router } from "express";
-import mongoose from "mongoose";
-import crypto from "crypto";
 const router = Router();
 
-import { chunk, chunkSchema } from "../models/chunkModel";
-import { file, fileSchema } from "../models/fileModel";
+import { chunk, chunkSchema } from "../models/chunkModel.js";
+import { file, fileSchema } from "../models/fileModel.js";
 
 // GET FILES API
 router.get("/:userId", async (req, res) => {
@@ -33,14 +31,17 @@ router.get("/chunk/download/:chunkId", async (req, res) => {
     });
 
     if (retrievedChunk) {
-      console.log("sending CHUNK for id" + req.params.chunkId);
+      console.log("Sending CHUNK for id " + req.params.chunkId);
 
       res.status(200).send({
         message: "sucess",
-        chunk: retrievedChunk,
+        chunk: {
+          fileId: retrievedChunk.fileId,
+          data: retrievedChunk.data.toString(),
+        },
       });
     } else {
-      throw new Error("Now Chunk Founds");
+      throw new Error("No Chunk Founds");
     }
   } catch (error) {
     console.log(error);
