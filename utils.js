@@ -21,10 +21,7 @@ export async function connectToMongoDB () {
 
 export async function checkUserAlreadyExists(email){
   const user = await User.find({email});
-  if(user){
-    return true;
-  }
-  return false;
+  return (user.length !== 0);
 
 }
 
