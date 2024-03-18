@@ -19,9 +19,9 @@ export async function connectToMongoDB () {
   })
 }
 
-export async function checkUserAlreadyExists(email){
+export async function fetchUserByEmail(email){
   const user = await User.find({email});
-  return (user.length !== 0);
+  return user;
 
 }
 
@@ -30,7 +30,7 @@ export async function addUser({email,name,picture}){
   try{
     const result = await user.save();
     if(result){
-      return ({success:true,message:"User added successfully"})
+      return ({success:true,message:"User added successfully",data:result})
     }
     return ({success:false,message:"Failed adding user"})
   }

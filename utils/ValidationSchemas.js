@@ -5,6 +5,7 @@ export const getFileLinkSchema = Joi.object({
     userId : Joi.string().required(), //TODO: Need to update
     fileId : Joi.string().required(),
     shareTypes : Joi.array().required().min(1),
+    totalChunks : Joi.number(),
     shareAttributes : Joi.object().required()
     // shareAttributes: Joi.object({
     //     time: Joi.object({

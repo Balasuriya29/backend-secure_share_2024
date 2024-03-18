@@ -2,7 +2,7 @@ import axios from "axios";
 import express from "express";
 import QueryString from "qs";
 import jwt from "jsonwebtoken";
-import { addUser, checkUserAlreadyExists, generateAccessToken } from "../utils.js";
+import { addUser, fetchUserByEmail, generateAccessToken } from "../utils.js";
 const authRouter = express();
 
 
@@ -20,9 +20,11 @@ authRouter.get("/callback", async (req,res)=>{
     if(tokenResult.data){
         console.log(tokenResult.data);
         const userDetails = jwt.decode(tokenResult.data["id_token"]);
-        const isUserAlreadyExists = await checkUserAlreadyExists(userDetails["email"]);
-        if(!isUserAlreadyExists){
+        const user = await fetchUserByEmail(userDetails["email"]);
+        if(user.length === 0){
             const addUserResult = await addUser(userDetails);
+            if(addUserResult.success)
+                userDetails["userId"] = addUserResult.data["_id"];
             console.log(addUserResult.message);
         }
         res.cookie('userdata',JSON.stringify(userDetails));

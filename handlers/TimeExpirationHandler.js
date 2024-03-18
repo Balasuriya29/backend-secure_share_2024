@@ -10,11 +10,11 @@ const TimeExpirationHandler = (sharedFile,socket) => {
         console.log('-----currentTime-----',currentTime);
         if(currentTime <= fileExpirationTime){
             console.log("----------User can access the file--------");
-            returnTimeExpirationResponse(true,socket);
+            returnTimeExpirationResponse(sharedFile,true,socket);
         }
         else{
             console.log('----File share expired------');
-            returnTimeExpirationResponse(false,socket);
+            returnTimeExpirationResponse(sharedFile,false,socket);
             clearInterval(expirationIntervalId);
         }
     },1000);

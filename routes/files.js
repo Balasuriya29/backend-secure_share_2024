@@ -3,6 +3,9 @@ const router = Router();
 
 import { chunk, chunkSchema } from "../models/chunkModel.js";
 import { file, fileSchema } from "../models/fileModel.js";
+import { createShareModel, validateFileId } from "../utils/FileHelper.js";
+import { getFileLinkSchema, validateShareAttributes } from "../utils/ValidationSchemas.js";
+import ShareFile from "../models/ShareFileModel.js";
 
 // GET FILES API
 router.get("/:userId", async (req, res) => {
@@ -133,6 +136,76 @@ router.post("/file/upload", async (req, res) => {
         received: v,
       });
     });
+});
+
+// GET SHARED FILE LINK API
+router.post("/getShareLink", async (req,res) => {
+
+  const {fileId} = req.body;
+
+  if(fileId && !validateFileId(fileId)){
+      res.status(404).json({success:false,message:"File not found"});
+      return;
+  }
+
+  // Get the file sharing attributes from body
+
+  const {error,value,warning} = getFileLinkSchema.validate(req.body);
+  if(error){
+      res.send(error.details[0].message);
+      return;
+  }
+
+  const {shareTypes, shareAttributes} = req.body;
+
+  const shareAttributesValidationResult = validateShareAttributes(shareTypes,shareAttributes);
+
+  if(!shareAttributesValidationResult){
+      res.status(400).json({success:false,message:'Invalid shareAttribute details'})
+  }
+
+   // Create a new transaction in db and save the fileid and attributes
+
+   console.log(req.body);
+
+   const shareModelResult = await createShareModel(req.body);
+
+   if(!shareModelResult.success){
+       res.json(shareModelResult);
+       return;
+   }
+
+   const shareId = shareModelResult.data.shareId;
+  
+  // Generate the link and send
+  res.json(
+      {
+          success:true,
+          data:
+          {
+              shareId:shareId,
+              link:`${process.env.FRONTEND_URL}/file/share/${shareId}`
+          }
+      }
+  )
+});
+
+// GET USER SHARED FILES
+
+router.post("/shared", async (req,res)=>{
+  console.log(req.body);
+    const {userId} = req.body;
+    if(!userId){
+      res.json({success:false,message:"userId required"});
+      return;
+    }
+    try{
+      const sharedFiles = await ShareFile.find({userId:userId});
+      res.status(200).json({success:true,data:sharedFiles});
+    }
+    catch(e){
+      console.log(e.message());
+    }
 });
 
 export default router;

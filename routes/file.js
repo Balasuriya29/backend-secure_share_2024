@@ -36,58 +36,5 @@ fileRouter.get('/sse/:fileId', (req, res) => {
 });
 
 
-fileRouter.get("/:fileId",(req,res)=>{
-    console.log(req.app.server);
-});
-
-fileRouter.post("/getShareLink", async (req,res) => {
-
-    const {fileId} = req.body;
-
-    if(fileId && !validateFileId(fileId)){
-        res.status(404).json({success:false,message:"File not found"});
-        return;
-    }
-
-    // Get the file sharing attributes from body
-
-    const {error,value,warning} = getFileLinkSchema.validate(req.body);
-    if(error){
-        res.send(error.details[0].message);
-        return;
-    }
-
-    const {shareTypes, shareAttributes} = req.body;
-
-    const shareAttributesValidationResult = validateShareAttributes(shareTypes,shareAttributes);
-
-    if(!shareAttributesValidationResult){
-        res.status(400).json({success:false,message:'Invalid shareAttribute details'})
-    }
-
-     // Create a new transaction in db and save the fileid and attributes
-
-     const shareModelResult = await createShareModel(req.body);
-
-     if(!shareModelResult.success){
-         res.json(shareModelResult);
-         return;
-     }
-
-     const shareId = shareModelResult.data.shareId;
-    
-    // Generate the link and send
-    res.json(
-        {
-            success:true,
-            data:
-            {
-                shareId:shareId,
-                link:`${process.env.FRONTEND_URL}/file/share/${shareId}`
-            }
-        }
-    )
-});
-
 
 export default fileRouter;
