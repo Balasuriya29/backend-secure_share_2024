@@ -6,6 +6,7 @@ const shareFile = new mongoose.Schema({
     userId : {type:mongoose.SchemaTypes.ObjectId,ref:'User'},
     shareTypes : Array,
     shareAttributes : Object,
+    connections : Array,
 });
 
 const ShareFile = mongoose.model("Share",shareFile,"Share");

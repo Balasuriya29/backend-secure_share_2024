@@ -6,7 +6,8 @@ export const getFileLinkSchema = Joi.object({
     fileId : Joi.string().required(),
     shareTypes : Joi.array().required().min(1),
     totalChunks : Joi.number(),
-    shareAttributes : Joi.object().required()
+    shareAttributes : Joi.object().required(),
+    connections : Joi.optional(),
     // shareAttributes: Joi.object({
     //     time: Joi.object({
     //         expiration:Joi.string()
@@ -38,7 +39,14 @@ export const validateShareAttributes = (shareTypes,shareAttributes) => {
                 return false;
         }
         else if(shareType === 'geoFence'){
-            if(shareAttributes[shareType]['latitude'] && shareAttributes[shareType]['longitude']){
+            if(shareAttributes[shareType]['latitude'] && shareAttributes[shareType]['longitude'] && shareAttributes[shareType]['radius']){
+                shareAttributesCounter-=1;
+            }
+            else
+                return false;
+        }
+        else if(shareType === "ipControl"){
+            if(shareAttributes[shareType]['noOfIPs']){
                 shareAttributesCounter-=1;
             }
             else

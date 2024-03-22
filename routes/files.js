@@ -166,6 +166,8 @@ router.post("/getShareLink", async (req,res) => {
 
    // Create a new transaction in db and save the fileid and attributes
 
+   req.body["connections"] = [];
+
    console.log(req.body);
 
    const shareModelResult = await createShareModel(req.body);

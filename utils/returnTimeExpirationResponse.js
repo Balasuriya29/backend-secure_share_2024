@@ -3,6 +3,6 @@ export default function (sharedFile,fileAccess,socket) {
         socket.emit('fileStatus',{status:"Open",fileId:sharedFile.fileId,totalChunks:sharedFile.totalChunks,showFile:true});
     }
     else{
-        socket.emit('fileStatus',{status:"Closed",showFile:false});
+        socket.emit('fileStatus',{status:"Closed",showFile:false,message:"Link expired"});
     }
 }

@@ -25,6 +25,11 @@ export async function fetchUserByEmail(email){
 
 }
 
+export async function fetchUserByUserId(userId){
+  const user = await User.findById(userId);
+  return user;
+}
+
 export async function addUser({email,name,picture}){
   const user = new User({email,name,profile_picture:picture})
   try{
@@ -38,4 +43,19 @@ export async function addUser({email,name,picture}){
     return ({success:false,message:e.message})
   }
   
+}
+
+
+export async function createUser(username){
+  const user = new User({username})
+  try{
+    const result = await user.save();
+    if(result){
+      return ({success:true,message:"User added successfully",data:result})
+    }
+    return ({success:false,message:"Failed adding user"})
+  }
+  catch(e){
+    return ({success:false,message:e.message})
+  }
 }

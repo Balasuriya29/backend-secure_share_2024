@@ -11,13 +11,15 @@ import {Server} from "socket.io";
 import { log } from "console";
 import TimeExpirationHandler from "./handlers/TimeExpirationHandler.js";
 import LocationHandler from "./handlers/LocationHandler.js";
-import { getSharedFile, isShareTypeContainsTime } from "./utils/FileHelper.js";
+import { getSharedFile, isShareTypesContains } from "./utils/FileHelper.js";
 
 
 // Imports
 import { connectDB } from "./connection.js";
 import files from "./routes/files.js";
 import authRouter from "./routes/auth.js";
+import ShareFile from "./models/ShareFileModel.js";
+import IPControlHandler from "./handlers/IPControlHandler.js";
 
 const app = express();
 
@@ -69,13 +71,21 @@ const io = new Server(server,{
 io.on("connection", (socket) => {
   console.log("New client connected");
   console.log("Socket connection id : ",socket.id);
+
+  socket.on('disconnect', () =>{
+    console.log(`${socket.id} has been disconnected`);
+  });
+
   socket.on("getFile",async (data)=>{
+    
     const shareId = data["shareId"];
     if(!shareId){
       socket.emit('error',{message:"shareId required"});
       socket.disconnect();
       return;
     }
+
+    console.log(`-----SHARE ID : ${shareId}----------`);
 
     // Fetching shareTypes of file
     const sharedFileResult = await getSharedFile(shareId);
@@ -86,12 +96,49 @@ io.on("connection", (socket) => {
 
     const sharedFile = sharedFileResult.data;
 
-    if(isShareTypeContainsTime(sharedFile["shareTypes"])){
-      console.log('---Share type is time-----');
+
+    console.log("-----shared file------");
+    console.log(sharedFile);
+
+    const shareTypes = sharedFile.shareTypes;
+    let fileStatus = {allowAccess:false};
+
+    for(var i in shareTypes){
+
+      if(isShareTypesContains(shareTypes, "ipControl")){
+
+        // Handle IP control
+        const result = await IPControlHandler(socket,sharedFile);
+        fileStatus = result;
+
+      }
+
+      if(isShareTypesContains(shareTypes, "geoFence")){
+        // Handle geoFence
+        if(!data["latitude"] || !data["longitude"]){
+          socket.emit("getLocationDetails");
+          return;
+        }
+        fileStatus = LocationHandler(sharedFile,{latitude:data["latitude"],longitude:data["longitude"]});
+      }
+
+    }
+
+    if(isShareTypesContains(shareTypes,"time")){
       TimeExpirationHandler(sharedFile,socket);
     }
-    // LocationHandler(data,socket)
-  })
+    else if(fileStatus.allowAccess){
+      socket.emit('fileStatus',{status:"Open",fileId:sharedFile.fileId,totalChunks:sharedFile.totalChunks,showFile:true})
+    }
+    else{
+      socket.emit('fileStatus',{status:"Closed",showFile:false,message:fileStatus.message});
+    }
+
+
+  });
+
+  
+  socket.to("")
 });
 
 server.listen(3001, () => {

@@ -42,8 +42,8 @@ export const getSharedFile = async (fileId) => {
 }
 
 
-export const isShareTypeContainsTime = (shareTypes) => {
-    const isShareTypeTime = shareTypes.find((shareType)=>shareType === 'time');
+export const isShareTypesContains = (shareTypes,key) => {
+    const isShareTypeTime = shareTypes.find((shareType)=>shareType === key);
     return (isShareTypeTime)?true:false;
 }
 

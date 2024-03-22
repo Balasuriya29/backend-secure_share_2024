@@ -1,24 +1,35 @@
 import haversine from "haversine-distance";
-const LocationHandler = (data,socket) => {
-    console.log(data["latitude"]);
-    console.log(data["longitude"]);
-    const accessibleLocation = {
-        latitude:12.964533546012508, 
-        longitude: 80.25026306019454
-    };
-    const accessibleRadius = 5000;
-    const incomingLocation = {
-        latitude: parseFloat(data["latitude"]),
-        longitude: parseFloat(data["longitude"]),
-      };
-    
-      const distance = haversine(incomingLocation, accessibleLocation);
-    
-      if (distance <= accessibleRadius) {
-        console.log('Client is within the accessible radius.');
-      } else {
-        console.log('Client is outside the accessible radius.');
-      }
-}
+const LocationHandler = (sharedFile, currentLocation) => {
+  const { latitude, longitude, radius } =
+    sharedFile["shareAttributes"]["geoFence"];
+
+  const accessibleLocation = {
+    latitude: latitude,
+    longitude: longitude,
+  };
+  const accessibleRadius = Number.parseInt(radius);
+
+  const incomingLocation = {
+    latitude: parseFloat(currentLocation["latitude"]),
+    longitude: parseFloat(currentLocation["longitude"]),
+  };
+
+  const distance = haversine(incomingLocation, accessibleLocation);
+
+  console.log("----db location----");
+  console.log(accessibleLocation);
+
+  console.log("----incoming location----");
+  console.log(incomingLocation);
+
+  console.log(distance);
+  console.log(accessibleRadius);
+
+  if (distance <= accessibleRadius) {
+    return { allowAccess: true };
+  } else {
+    return { allowAccess: false, message: "Out of the geofence" };
+  }
+};
 
 export default LocationHandler;
