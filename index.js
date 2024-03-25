@@ -7,12 +7,11 @@ import cookieParser from "cookie-parser";
 import { connectToMongoDB } from "./utils.js";
 import fileRouter from "./routes/file.js";
 import http from "http";
-import {Server} from "socket.io";
+import { Server } from "socket.io";
 import { log } from "console";
 import TimeExpirationHandler from "./handlers/TimeExpirationHandler.js";
 import LocationHandler from "./handlers/LocationHandler.js";
 import { getSharedFile, isShareTypesContains } from "./utils/FileHelper.js";
-
 
 // Imports
 import { connectDB } from "./connection.js";
@@ -24,17 +23,14 @@ import IPControlHandler from "./handlers/IPControlHandler.js";
 const app = express();
 
 const corsOptions = {
-  origin: 'http://localhost:5173',
+  origin: "*",
   // credentials:true,
 };
 
-
-app.use(cors(corsOptions));
-
+app.use(cors());
 
 app.use(express.json());
 app.use(cookieParser());
-
 
 const port = 3000;
 dotenv.config();
@@ -52,9 +48,9 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.use("/api/auth",authRouter);
+app.use("/api/auth", authRouter);
 
-app.use("/api/file",fileRouter);
+app.use("/api/file", fileRouter);
 
 app.listen(port, () => {
   console.log(`listening at http://localhost:${port}`);
@@ -62,25 +58,24 @@ app.listen(port, () => {
 
 const server = http.createServer(app);
 
-const io = new Server(server,{
-  cors:{
-    origin:"http://localhost:5173"
-  }
-}); 
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+  },
+});
 
 io.on("connection", (socket) => {
   console.log("New client connected");
-  console.log("Socket connection id : ",socket.id);
+  console.log("Socket connection id : ", socket.id);
 
-  socket.on('disconnect', () =>{
+  socket.on("disconnect", () => {
     console.log(`${socket.id} has been disconnected`);
   });
 
-  socket.on("getFile",async (data)=>{
-    
+  socket.on("getFile", async (data) => {
     const shareId = data["shareId"];
-    if(!shareId){
-      socket.emit('error',{message:"shareId required"});
+    if (!shareId) {
+      socket.emit("error", { message: "shareId required" });
       socket.disconnect();
       return;
     }
@@ -89,58 +84,56 @@ io.on("connection", (socket) => {
 
     // Fetching shareTypes of file
     const sharedFileResult = await getSharedFile(shareId);
-    if(!sharedFileResult.success){
-      socket.emit('error',{message:"file not found"});
+    if (!sharedFileResult.success) {
+      socket.emit("error", { message: "file not found" });
       socket.disconnect();
     }
 
     const sharedFile = sharedFileResult.data;
 
-
     console.log("-----shared file------");
     console.log(sharedFile);
 
     const shareTypes = sharedFile.shareTypes;
-    let fileStatus = {allowAccess:false};
+    let fileStatus = { allowAccess: false };
 
-    for(var i in shareTypes){
+    if (isShareTypesContains(shareTypes, "ipControl")) {
+      // Handle IP control
+      const result = await IPControlHandler(socket, sharedFile);
+      fileStatus = result;
+    }
 
-      if(isShareTypesContains(shareTypes, "ipControl")){
-
-        // Handle IP control
-        const result = await IPControlHandler(socket,sharedFile);
-        fileStatus = result;
-
+    if (isShareTypesContains(shareTypes, "geoFence")) {
+      // Handle geoFence
+      if (!data["latitude"] || !data["longitude"]) {
+        socket.emit("getLocationDetails");
+        return;
       }
-
-      if(isShareTypesContains(shareTypes, "geoFence")){
-        // Handle geoFence
-        if(!data["latitude"] || !data["longitude"]){
-          socket.emit("getLocationDetails");
-          return;
-        }
-        fileStatus = LocationHandler(sharedFile,{latitude:data["latitude"],longitude:data["longitude"]});
-      }
-
+      fileStatus = LocationHandler(sharedFile, {
+        latitude: data["latitude"],
+        longitude: data["longitude"],
+      });
     }
 
-    if(isShareTypesContains(shareTypes,"time")){
-      TimeExpirationHandler(sharedFile,socket);
+    if (isShareTypesContains(shareTypes, "time")) {
+      TimeExpirationHandler(sharedFile, socket);
+    } else if (fileStatus.allowAccess) {
+      socket.emit("fileStatus", {
+        status: "Open",
+        fileId: sharedFile.fileId,
+        totalChunks: sharedFile.totalChunks,
+        showFile: true,
+      });
+    } else {
+      socket.emit("fileStatus", {
+        status: "Closed",
+        showFile: false,
+        message: fileStatus.message,
+      });
     }
-    else if(fileStatus.allowAccess){
-      socket.emit('fileStatus',{status:"Open",fileId:sharedFile.fileId,totalChunks:sharedFile.totalChunks,showFile:true})
-    }
-    else{
-      socket.emit('fileStatus',{status:"Closed",showFile:false,message:fileStatus.message});
-    }
-
-
   });
-
-  
-  socket.to("")
 });
 
 server.listen(3001, () => {
-  console.log('socket running at http://localhost:3001');
+  console.log("socket running at http://localhost:3001");
 });
