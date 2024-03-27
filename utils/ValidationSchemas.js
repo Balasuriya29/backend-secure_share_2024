@@ -52,6 +52,14 @@ export const validateShareAttributes = (shareTypes,shareAttributes) => {
             else
                 return false;
         }
+        else if(shareType === "notifyMe"){
+            if(shareAttributes[shareType]["views"] || shareAttributes[shareType]["downloads"]){
+                shareAttributesCounter-=1;
+            }
+            else{
+                return false;
+            }
+        }
     })
     if(shareAttributesCounter === 0){
         return true;
